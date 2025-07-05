@@ -13,19 +13,11 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # Refined Disease Categories (YOU MUST VERIFY AND JUSTIFY THESE IN YOUR REPORT!)
 # This is a critical research component for your assignment.
 DISEASE_CATEGORIES = {
-    'aids': 'Infectious Disease',
-    'dengue': 'Infectious Disease',
-    'malaria': 'Infectious Disease',
-    'measles': 'Infectious Disease',
-    'tuberculosis': 'Infectious Disease',
-    'typhoid': 'Infectious Disease',
-    'food poisoning': 'Infectious Disease', # Often related to bacterial/viral agents
-    'hand foot and mouth disease': 'Infectious Disease', # Viral
-    'chancroid': 'Sexually Transmitted Infection',
-    'gonorrhea': 'Sexually Transmitted Infection',
-    'hiv': 'Sexually Transmitted Infection',
-    'syphillis': 'Sexually Transmitted Infection',
-    'haze': 'Environmental Health Issue' # Environmental factor impacting health
+    'chancroid': 'chancroid',
+    'gonorrhea': 'gonorrhea',
+    'hiv': 'hiv',
+    'syphillis': 'syphillis',
+    'aids': 'aids'
 }
 
 # --- 1. Data Loading and Initial Pre-processing ---
