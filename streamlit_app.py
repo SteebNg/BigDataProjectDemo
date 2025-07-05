@@ -13,11 +13,11 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # Refined Disease Categories (YOU MUST VERIFY AND JUSTIFY THESE IN YOUR REPORT!)
 # This is a critical research component for your assignment.
 DISEASE_CATEGORIES = {
-    'chancroid': 'chancroid',
-    'gonorrhea': 'gonorrhea',
-    'hiv': 'hiv',
-    'syphillis': 'syphillis',
-    'aids': 'aids'
+    'chancroid': 'Chancroid',
+    'gonorrhea': 'Gonorrhea',
+    'hiv': 'Hiv',
+    'syphillis': 'Syphillis',
+    'aids': 'Aids'
 }
 
 # --- 1. Data Loading and Initial Pre-processing ---
