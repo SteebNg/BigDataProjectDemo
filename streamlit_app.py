@@ -71,6 +71,8 @@ def preprocess_data(df):
 
     return df_processed
 
+#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+
 # --- 2. Data Analysis Functions (Refactored for interactivity) ---
 @st.cache_data
 def get_yearly_category_trends(df):
@@ -92,6 +94,8 @@ def get_overall_category_summary(df):
         total_cases=('cases', 'sum'),
         avg_incidence=('incidence', 'mean')
     ).sort_values(by='total_cases', ascending=False).reset_index()
+
+#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 
 # --- 3. Visualization Functions ---
 def plot_cases_over_time(df, title):
@@ -144,6 +148,8 @@ def plot_cases_by_state_for_category(df, category, title):
     plt.tight_layout()
     return fig, None
 
+#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+
 # --- NEW: Machine Learning Functions (Linear Regression Forecasting) ---
 @st.cache_resource # Use st.cache_resource for models
 def train_linear_regression_model(df_filtered):
@@ -174,6 +180,8 @@ def make_linear_regression_forecast(model, last_year, years_to_forecast):
         'Predicted Total Cases': forecasted_cases
     })
     return forecast_df
+
+#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 
 # --- Main Streamlit App Structure ---
 def main():
@@ -218,6 +226,8 @@ def main():
         state_category_trends = get_state_category_trends(processed_df)
         overall_category_summary = get_overall_category_summary(processed_df)
     st.sidebar.success("Data Ready!")
+
+    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 
     # --- Dashboard Overview Section ---
     if selected_analysis == "Dashboard Overview":
@@ -283,6 +293,8 @@ def main():
         else:
             st.info("Please select at least one disease category to view its trend over time.")
 
+    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+
     # --- Disease Category Trends Section ---
     elif selected_analysis == "Disease Category Trends":
         st.header("Detailed Disease Category Trends (2017-2021)")
@@ -310,6 +322,8 @@ def main():
         </p>
         """, unsafe_allow_html=True)
 
+    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+
     # --- Geographical Analysis Section ---
     elif selected_analysis == "Geographical Analysis":
         st.header("Geographical Analysis: High-Risk States")
@@ -334,6 +348,8 @@ def main():
                 """, unsafe_allow_html=True)
             else:
                 st.info(msg)
+
+    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 
     # --- Predictive Analysis Section ---
     elif selected_analysis == "Predictive Analysis (ML)":
@@ -413,6 +429,8 @@ def main():
                 st.dataframe(forecast_df)
             else:
                 st.info(f"No historical data found for '{selected_category_forecast}' to perform a forecast.")
+
+    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 
     # --- Data Explorer Section ---
     elif selected_analysis == "Data Explorer":
@@ -505,3 +523,5 @@ if __name__ == "__main__":
     plt.rcParams['figure.dpi'] = 100 # Adjust for better resolution if needed
 
     main()
+
+#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
