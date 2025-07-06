@@ -144,6 +144,37 @@ def plot_cases_by_state_for_category(df, category, title):
     plt.tight_layout()
     return fig, None
 
+# --- NEW: Machine Learning Functions (Linear Regression Forecasting) ---
+@st.cache_resource # Use st.cache_resource for models
+def train_linear_regression_model(df_filtered):
+    """
+    Trains a Linear Regression model for forecasting.
+    df_filtered must contain 'year' and 'total_cases'.
+    """
+    if df_filtered.empty or len(df_filtered) < 2:
+        return None, "Not enough data points for linear regression (at least 2 required)."
+
+    X = df_filtered[['year']]
+    y = df_filtered['total_cases']
+
+    model = LinearRegression()
+    model.fit(X, y)
+    return model, None
+
+def make_linear_regression_forecast(model, last_year, years_to_forecast):
+    """
+    Generates future dates and makes predictions using a trained Linear Regression model.
+    """
+    future_years = np.array(range(last_year + 1, last_year + 1 + years_to_forecast)).reshape(-1, 1)
+    forecasted_cases = model.predict(future_years)
+    
+    # Create a DataFrame for display
+    forecast_df = pd.DataFrame({
+        'Year': future_years.flatten(),
+        'Predicted Total Cases': forecasted_cases
+    })
+    return forecast_df
+
 # --- Main Streamlit App Structure ---
 def main():
     st.set_page_config(
@@ -172,6 +203,7 @@ def main():
         "Dashboard Overview",
         "Disease Category Trends",
         "Geographical Analysis",
+        "Predictive Analysis",
         "Data Explorer",
         "About This Project"
     ]
@@ -303,6 +335,85 @@ def main():
             else:
                 st.info(msg)
 
+    # --- Predictive Analysis Section ---
+    elif selected_analysis == "Predictive Analysis (ML)":
+        st.header("Predictive Analysis: Forecast Future Disease Cases")
+        st.write("Utilize a Machine Learning model (Linear Regression) to forecast future total cases for a selected disease category.")
+
+        unique_categories_forecast = sorted(yearly_category_trends['disease_category'].unique())
+        selected_category_forecast = st.selectbox(
+            "Select Disease Category to Forecast:",
+            options=unique_categories_forecast
+        )
+
+        years_to_forecast = st.slider(
+            "Number of Years to Forecast (beyond 2021):",
+            min_value=1,
+            max_value=5,
+            value=2
+        )
+
+        if selected_category_forecast:
+            st.subheader(f"Forecasting Total Cases for: {selected_category_forecast}")
+
+            df_to_model = yearly_category_trends[
+                yearly_category_trends['disease_category'] == selected_category_forecast
+            ]
+            
+            model, error_msg = train_linear_regression_model(df_to_model)
+
+            if error_msg:
+                st.warning(error_msg)
+            elif model:
+                last_year = df_to_model['year'].max()
+                forecast_df = make_linear_regression_forecast(model, last_year, years_to_forecast)
+
+                st.success("Forecast Generated Successfully!")
+
+                # Plotting Historical + Forecasted with Linear Regression
+                fig, ax = plt.subplots(figsize=(10, 6))
+                
+                # Historical data
+                sns.lineplot(data=df_to_model, x='year', y='total_cases', marker='o', label='Historical Data', ax=ax)
+                sns.scatterplot(data=df_to_model, x='year', y='total_cases', color='blue', s=100, ax=ax) # Add points
+                
+                # Linear Regression line for historical period
+                # Create a sequence of years from min historical to max forecast
+                all_years = np.concatenate((df_to_model['year'].values, forecast_df['Year'].values))
+                min_plot_year = min(all_years)
+                max_plot_year = max(all_years)
+                
+                # Generate years for the regression line (including forecast period)
+                regression_years = np.array(range(min_plot_year, max_plot_year + 1)).reshape(-1, 1)
+                predicted_line_cases = model.predict(regression_years)
+                
+                ax.plot(regression_years, predicted_line_cases, color='red', linestyle='--', label='Linear Regression Trend')
+
+                # Forecasted points
+                sns.scatterplot(data=forecast_df, x='Year', y='Predicted Total Cases', color='green', marker='X', s=150, label='Forecasted Data', ax=ax)
+                
+                ax.set_title(f'Linear Regression Forecast for {selected_category_forecast} Total Cases')
+                ax.set_xlabel('Year')
+                ax.set_ylabel('Total Cases')
+                ax.set_xticks(np.arange(min_plot_year, max_plot_year + 1, 1)) # Ensure all relevant years are ticks
+                ax.grid(True, linestyle='--', alpha=0.6)
+                ax.legend()
+                plt.tight_layout()
+                st.pyplot(fig)
+                
+                st.markdown(f"""
+                <p style='font-size: small; text-align: center;'>
+                This chart displays the historical total cases (blue dots) and the forecasted cases (green X marks)
+                for **{selected_category_forecast}** using a simple Linear Regression model.
+                The red dashed line represents the linear trend.
+                </p>
+                """, unsafe_allow_html=True)
+
+                st.subheader("Forecasted Data (Next Years)")
+                st.dataframe(forecast_df)
+            else:
+                st.info(f"No historical data found for '{selected_category_forecast}' to perform a forecast.")
+
     # --- Data Explorer Section ---
     elif selected_analysis == "Data Explorer":
         st.header("Data Explorer")
@@ -339,36 +450,43 @@ def main():
 
         ### Project Objective
         To apply big data analysis and programming techniques to a realistic healthcare scenario in Malaysia,
-        specifically focusing on **Disease Category Analysis**.
+        specifically focusing on **Disease Trend Analysis and Prediction**.
 
         ### Key Features
         * **Data Loading & Pre-processing:** Handles raw `.csv` data, converts date formats, and applies custom disease categorization.
         * **Disease Categorization:** Groups similar diseases into broader categories for macro-level analysis.
             *(Note: The current categorization is illustrative and should be thoroughly researched and justified in your assignment report.)*
-        * **Trend Analysis:** Visualizes trends of disease cases and incidence rates over time (2017-2021).
+        * **Trend Analysis:** Visualizes historical trends of disease cases and incidence rates over time (2017-2021).
         * **Geographical Hotspot Identification:** Identifies states with higher disease burdens for specific categories.
         * **Interactive Dashboard:** Provides a user-friendly interface to explore data and visualizations.
+        * **Predictive Analysis (Machine Learning):** Integrates a machine learning model to forecast future disease cases.
+            * **Chosen Algorithm:** We utilize the **Prophet** library (developed by Meta/Facebook) for its robust capabilities in time series forecasting, especially for handling trends and potential seasonality in future, more granular datasets. *(If you use Linear Regression, change this to: "We utilize **Linear Regression** for its simplicity and interpretability as a baseline forecasting model.")*
+            * **Forecasting Goal:** To predict the total cases for selected disease categories for upcoming years.
 
         ### Technologies Used
         * **Python:** The core programming language.
-        * **Pandas:** For data manipulation and analysis.
-        * **Matplotlib & Seaborn:** For static data visualization.
+        * **Pandas:** For efficient data manipulation and analysis.
+        * **Matplotlib & Seaborn:** For static and informative data visualization.
         * **Streamlit:** For building the interactive web application/dashboard.
+        * **Prophet (Meta/Facebook):** For time series forecasting. *(Remove this line if you are only using Linear Regression)*
+        * **Scikit-learn:** For machine learning algorithms, specifically Linear Regression. *(Add this line if you are using Linear Regression, or keep both if you compare them)*
 
-        ### Future Enhancements (For Discussion in Report)
-        * Integration of demographic data (age, gender) for more granular risk group analysis.
-        * Implementation of predictive models for future disease outbreaks.
-        * More advanced geospatial visualizations.
-        * Connection to larger, real-time healthcare datasets.
+        ### Future Enhancements & Key Discussion Points for Report
+        * **Integration of Additional Data:** Incorporate demographic data (e.g., age groups, gender distribution, population density) or environmental factors for more granular risk group analysis and potentially more accurate predictions.
+        * **Advanced Geospatial Visualizations:** Explore more sophisticated mapping techniques to display geographical patterns.
+        * **Model Evaluation & Comparison:** Implement metrics like RMSE, MAE, or R-squared to objectively evaluate the performance of the predictive model. If multiple models are considered (e.g., Prophet vs. Linear Regression), a comparative analysis would be valuable.
+        * **Hyperparameter Tuning:** Investigate and discuss how tuning model parameters (e.g., `changepoint_prior_scale` in Prophet) can impact forecasting accuracy.
+        * **Real-time Data Integration:** Discuss the challenges and possibilities of connecting to larger, real-time healthcare datasets.
+        * **Ethical Considerations:** Reflect on the ethical implications of using predictive analytics in healthcare, including data privacy, bias in predictions, and responsible communication of forecasts.
 
         ### Assignment Guidance Reminder
         Remember to detail all aspects of this project in your assignment report, including:
         * Problem Definition & Literature Review
-        * Data Analysis (EDA, Machine Learning Algorithms if applied, Algorithm Complexity)
-        * Professional Practices (Version control, ethics, etc.)
-        * Interpretation of Results
-        * Appropriate Diagrams (DFD, ERD, Flowcharts, UML, Gantt chart)
-        * A critical reflection on your work during the VIVA.
+        * Comprehensive Data Analysis (Exploratory Data Analysis, detailed explanation of Machine Learning Algorithms applied, Algorithm Complexity, Model Evaluation, and Hyperparameter Tuning)
+        * Professional Practices (Version control using Git/GitHub, ethical considerations, project management)
+        * Clear Interpretation of Results from both historical analysis and predictive models
+        * Appropriate Diagrams (Data Flow Diagram, Entity-Relationship Diagram, Flowcharts, UML diagrams, Gantt chart for project timeline)
+        * A critical reflection on your work during the VIVA, highlighting challenges faced and lessons learned.
         """)
         st.markdown("---")
         st.write("Developed for the 5011CEM Big Data Programming Project.")
