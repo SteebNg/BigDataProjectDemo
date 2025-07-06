@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os # To handle directory creation
 import numpy as np # Ensure numpy is imported
+from sklearn.linear_model import LinearRegression
 
 # --- Configuration and Constants ---
 DATASET_PATH = 'std_state.csv'
