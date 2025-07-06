@@ -71,8 +71,6 @@ def preprocess_data(df):
 
     return df_processed
 
-#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
-
 # --- 2. Data Analysis Functions (Refactored for interactivity) ---
 @st.cache_data
 def get_yearly_category_trends(df):
@@ -94,8 +92,6 @@ def get_overall_category_summary(df):
         total_cases=('cases', 'sum'),
         avg_incidence=('incidence', 'mean')
     ).sort_values(by='total_cases', ascending=False).reset_index()
-
-#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 
 # --- 3. Visualization Functions ---
 def plot_cases_over_time(df, title):
@@ -148,8 +144,6 @@ def plot_cases_by_state_for_category(df, category, title):
     plt.tight_layout()
     return fig, None
 
-#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
-
 # --- NEW: Machine Learning Functions (Linear Regression Forecasting) ---
 @st.cache_resource # Use st.cache_resource for models
 def train_linear_regression_model(df_filtered):
@@ -181,8 +175,6 @@ def make_linear_regression_forecast(model, last_year, years_to_forecast):
     })
     return forecast_df
 
-#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
-
 # --- Main Streamlit App Structure ---
 def main():
     st.set_page_config(
@@ -211,7 +203,7 @@ def main():
         "Dashboard Overview",
         "Disease Category Trends",
         "Geographical Analysis",
-        "Predictive Analysis",
+        "Predictive Analysis (ML)",
         "Data Explorer",
         "About This Project"
     ]
@@ -226,8 +218,6 @@ def main():
         state_category_trends = get_state_category_trends(processed_df)
         overall_category_summary = get_overall_category_summary(processed_df)
     st.sidebar.success("Data Ready!")
-
-    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 
     # --- Dashboard Overview Section ---
     if selected_analysis == "Dashboard Overview":
@@ -293,8 +283,6 @@ def main():
         else:
             st.info("Please select at least one disease category to view its trend over time.")
 
-    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
-
     # --- Disease Category Trends Section ---
     elif selected_analysis == "Disease Category Trends":
         st.header("Detailed Disease Category Trends (2017-2021)")
@@ -322,8 +310,6 @@ def main():
         </p>
         """, unsafe_allow_html=True)
 
-    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
-
     # --- Geographical Analysis Section ---
     elif selected_analysis == "Geographical Analysis":
         st.header("Geographical Analysis: High-Risk States")
@@ -348,8 +334,6 @@ def main():
                 """, unsafe_allow_html=True)
             else:
                 st.info(msg)
-
-    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
 
     # --- Predictive Analysis Section ---
     elif selected_analysis == "Predictive Analysis (ML)":
@@ -430,8 +414,6 @@ def main():
             else:
                 st.info(f"No historical data found for '{selected_category_forecast}' to perform a forecast.")
 
-    #BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
-
     # --- Data Explorer Section ---
     elif selected_analysis == "Data Explorer":
         st.header("Data Explorer")
@@ -468,43 +450,36 @@ def main():
 
         ### Project Objective
         To apply big data analysis and programming techniques to a realistic healthcare scenario in Malaysia,
-        specifically focusing on **Disease Trend Analysis and Prediction**.
+        specifically focusing on **Disease Category Analysis**.
 
         ### Key Features
         * **Data Loading & Pre-processing:** Handles raw `.csv` data, converts date formats, and applies custom disease categorization.
         * **Disease Categorization:** Groups similar diseases into broader categories for macro-level analysis.
             *(Note: The current categorization is illustrative and should be thoroughly researched and justified in your assignment report.)*
-        * **Trend Analysis:** Visualizes historical trends of disease cases and incidence rates over time (2017-2021).
+        * **Trend Analysis:** Visualizes trends of disease cases and incidence rates over time (2017-2021).
         * **Geographical Hotspot Identification:** Identifies states with higher disease burdens for specific categories.
         * **Interactive Dashboard:** Provides a user-friendly interface to explore data and visualizations.
-        * **Predictive Analysis (Machine Learning):** Integrates a machine learning model to forecast future disease cases.
-            * **Chosen Algorithm:** We utilize the **Prophet** library (developed by Meta/Facebook) for its robust capabilities in time series forecasting, especially for handling trends and potential seasonality in future, more granular datasets. *(If you use Linear Regression, change this to: "We utilize **Linear Regression** for its simplicity and interpretability as a baseline forecasting model.")*
-            * **Forecasting Goal:** To predict the total cases for selected disease categories for upcoming years.
 
         ### Technologies Used
         * **Python:** The core programming language.
-        * **Pandas:** For efficient data manipulation and analysis.
-        * **Matplotlib & Seaborn:** For static and informative data visualization.
+        * **Pandas:** For data manipulation and analysis.
+        * **Matplotlib & Seaborn:** For static data visualization.
         * **Streamlit:** For building the interactive web application/dashboard.
-        * **Prophet (Meta/Facebook):** For time series forecasting. *(Remove this line if you are only using Linear Regression)*
-        * **Scikit-learn:** For machine learning algorithms, specifically Linear Regression. *(Add this line if you are using Linear Regression, or keep both if you compare them)*
 
-        ### Future Enhancements & Key Discussion Points for Report
-        * **Integration of Additional Data:** Incorporate demographic data (e.g., age groups, gender distribution, population density) or environmental factors for more granular risk group analysis and potentially more accurate predictions.
-        * **Advanced Geospatial Visualizations:** Explore more sophisticated mapping techniques to display geographical patterns.
-        * **Model Evaluation & Comparison:** Implement metrics like RMSE, MAE, or R-squared to objectively evaluate the performance of the predictive model. If multiple models are considered (e.g., Prophet vs. Linear Regression), a comparative analysis would be valuable.
-        * **Hyperparameter Tuning:** Investigate and discuss how tuning model parameters (e.g., `changepoint_prior_scale` in Prophet) can impact forecasting accuracy.
-        * **Real-time Data Integration:** Discuss the challenges and possibilities of connecting to larger, real-time healthcare datasets.
-        * **Ethical Considerations:** Reflect on the ethical implications of using predictive analytics in healthcare, including data privacy, bias in predictions, and responsible communication of forecasts.
+        ### Future Enhancements (For Discussion in Report)
+        * Integration of demographic data (age, gender) for more granular risk group analysis.
+        * Implementation of predictive models for future disease outbreaks.
+        * More advanced geospatial visualizations.
+        * Connection to larger, real-time healthcare datasets.
 
         ### Assignment Guidance Reminder
         Remember to detail all aspects of this project in your assignment report, including:
         * Problem Definition & Literature Review
-        * Comprehensive Data Analysis (Exploratory Data Analysis, detailed explanation of Machine Learning Algorithms applied, Algorithm Complexity, Model Evaluation, and Hyperparameter Tuning)
-        * Professional Practices (Version control using Git/GitHub, ethical considerations, project management)
-        * Clear Interpretation of Results from both historical analysis and predictive models
-        * Appropriate Diagrams (Data Flow Diagram, Entity-Relationship Diagram, Flowcharts, UML diagrams, Gantt chart for project timeline)
-        * A critical reflection on your work during the VIVA, highlighting challenges faced and lessons learned.
+        * Data Analysis (EDA, Machine Learning Algorithms if applied, Algorithm Complexity)
+        * Professional Practices (Version control, ethics, etc.)
+        * Interpretation of Results
+        * Appropriate Diagrams (DFD, ERD, Flowcharts, UML, Gantt chart)
+        * A critical reflection on your work during the VIVA.
         """)
         st.markdown("---")
         st.write("Developed for the 5011CEM Big Data Programming Project.")
@@ -523,5 +498,3 @@ if __name__ == "__main__":
     plt.rcParams['figure.dpi'] = 100 # Adjust for better resolution if needed
 
     main()
-
-#BREAAAAAAAAAAKKAKAKAKAKAAKKAAKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
